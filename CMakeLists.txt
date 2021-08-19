@@ -26,7 +26,6 @@ target_link_libraries(
   
   m
   ${CURSES_LIBRARIES}
-  OpenGL::OpenGL
-  OpenGL::GLU
+  ${OPENGL_LIBRARIES}
   ${GLUT_LIBRARY}
 )
