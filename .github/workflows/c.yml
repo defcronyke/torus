@@ -16,6 +16,7 @@ jobs:
 
       - name: debug-linux-x86_64
         run: |
+          sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev
           ./build.sh -DCMAKE_BUILD_TYPE=Debug
           mkdir -p torus/torus/
           cp -r build/torus torus/torus/
