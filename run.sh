@@ -9,7 +9,7 @@ torus_run_sh() {
 
   trap "torus_run_sh_on_close $@" INT TERM
 
-  ./build.sh $@
+  ./build.sh -DCMAKE_BUILD_TYPE=Release $@
 
   cd build
 

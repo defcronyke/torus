@@ -1,0 +1,49 @@
+name: github-pipeline
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+  workflow_dispatch:
+
+jobs:
+  debug-linux-x86_64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: debug-linux-x86_64
+        run: |
+          ./build.sh -DCMAKE_BUILD_TYPE=Debug
+          mkdir -p torus/torus/
+          cp -r build/torus torus/torus/
+          chmod 755 torus/torus/torus
+
+      - name: torus-debug-linux-x86_64
+        uses: actions/upload-artifact@v2
+        with:
+          name: torus-debug-linux-x86_64
+          path: |
+            torus
+
+  release-linux-x86_64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: release-linux-x86_64
+        run: |
+          ./build.sh -DCMAKE_BUILD_TYPE=Release
+          mkdir -p torus/torus/
+          strip -s build/torus
+          cp -r build/torus torus/torus/
+          chmod 755 torus/torus/torus
+
+      - name: torus-release-linux-x86_64
+        uses: actions/upload-artifact@v2
+        with:
+          name: torus-release-linux-x86_64
+          path: |
+            torus
