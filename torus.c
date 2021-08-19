@@ -49,7 +49,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <ncurses.h>
-#include <chrono>
 
 #define PI_ 3.14159265358979323846
 
@@ -63,8 +62,6 @@ static int numt_s = DEFCRON_TORUS_NUMT_DEFAULT;
 
 static bool keystates[256];
 static bool keyspecialstates[256];
-
-// static auto frameAdjust;
 
 GLuint theTorus;
 
@@ -154,15 +151,17 @@ static void init(void)
 }
 
 void handleKeys(double frameAdjust) {
-  double speedAdjust = 5000000000.0;
+  double speedAdjust = 0.6;
 
-  double rotateSpeed = 0.2;
+  double speedAdjustPi = 2.0;
+
+  double rotateSpeed = 0.6;
 
   bool reInit = false;
   bool screenUpdated = false;
 
   if (keystates['e'] || keystates['E']) {
-    pi_s += 0.003339 / frameAdjust * speedAdjust;
+    pi_s += 0.003339 * speedAdjust * speedAdjustPi / frameAdjust;
 
     pi_s = ((pi_s < 0) && (pi_s >= -0.001)) ? (pi_s * -1) + 0.008 : pi_s;
 
@@ -171,7 +170,7 @@ void handleKeys(double frameAdjust) {
   }
 
   if (keystates['q'] || keystates['Q']) {
-    pi_s -= 0.003339 / frameAdjust * speedAdjust;
+    pi_s -= 0.003339 * speedAdjust * speedAdjustPi / frameAdjust;
 
     pi_s = ((pi_s > 0) && (pi_s <= 0.001)) ? (pi_s * -1) - 0.008 : pi_s;
 
@@ -231,25 +230,25 @@ void handleKeys(double frameAdjust) {
   }
 
   if (keyspecialstates[GLUT_KEY_RIGHT]) {
-      glRotatef(rotateSpeed / frameAdjust * speedAdjust, 0.0, 1.0, 0.0);
+      glRotatef(rotateSpeed * speedAdjust / frameAdjust, 0.0, 1.0, 0.0);
 
       screenUpdated = true;
   }
 
   if (keyspecialstates[GLUT_KEY_LEFT]) {
-      glRotatef(rotateSpeed / frameAdjust * speedAdjust, 0.0, -1.0, 0.0);
+      glRotatef(rotateSpeed * speedAdjust / frameAdjust, 0.0, -1.0, 0.0);
 
       screenUpdated = true;
   }
 
   if (keyspecialstates[GLUT_KEY_UP]) {
-      glRotatef(rotateSpeed / frameAdjust * speedAdjust, -1.0, 0.0, 0.0);
+      glRotatef(rotateSpeed * speedAdjust / frameAdjust, -1.0, 0.0, 0.0);
       
       screenUpdated = true;
   }
 
   if (keyspecialstates[GLUT_KEY_DOWN]) {
-      glRotatef(rotateSpeed / frameAdjust * speedAdjust, 1.0, 0.0, 0.0);
+      glRotatef(rotateSpeed * speedAdjust / frameAdjust, 1.0, 0.0, 0.0);
       
       screenUpdated = true;
   }
@@ -347,19 +346,10 @@ int main(int argc, char **argv)
   
   atexit(onexit);
 
-
-  std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-  auto duration = now.time_since_epoch();
-  auto frameAdjustDuration = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
-  double frameAdjust = std::chrono::duration<double>(frameAdjustDuration).count();
+  double frameAdjust = 1.0;
 
   while(1)
   {
-    now = std::chrono::system_clock::now();
-    duration = now.time_since_epoch();
-    frameAdjustDuration = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
-    frameAdjust = std::chrono::duration<double>(frameAdjustDuration).count();
-
     handleKeys(frameAdjust);
     glutMainLoopEvent();
   }
