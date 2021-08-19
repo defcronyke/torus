@@ -151,11 +151,11 @@ static void init(void)
 }
 
 void handleKeys(double frameAdjust) {
-  double speedAdjust = 0.6;
+  double speedAdjust = 0.8;
 
-  double speedAdjustPi = 2.0;
+  double speedAdjustPi = 6.0;
 
-  double rotateSpeed = 0.6;
+  double rotateSpeed = 0.9;
 
   bool reInit = false;
   bool screenUpdated = false;
