@@ -10,8 +10,9 @@ torus_build_sh() {
 
   trap "torus_build_sh_on_close $@" INT TERM
 
-  mkdir -p build
+  rm -rf build
 
+  mkdir -p build
 
   rm torus 2>/dev/null
   rm torus.exe 2>/dev/null
