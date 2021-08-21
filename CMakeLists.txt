@@ -6,7 +6,7 @@ set (CURSES_NEED_WIDE TRUE)
 
 add_executable(torus torus.c)
 
-find_package(Curses REQUIRED)
+find_package(Curses)
 find_package(OpenGL REQUIRED COMPONENTS OpenGL)
 find_package(GLUT REQUIRED)
 

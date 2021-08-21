@@ -48,7 +48,10 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+
+#ifndef _WIN32
 #include <ncurses.h>
+#endif
 
 #define PI_ 3.14159265358979323846
 
@@ -132,15 +135,19 @@ static void torus(int numc, int numt, double pi)
 /* Create display list with Torus and initialize state */
 static void init(void)
 {
+#ifndef _WIN32
   refresh();
-
   mvprintw(0, 0, "pi = %.15f              ", pi_s);
   mvprintw(2, 0, "c  = %d                 ", numc_s);
   mvprintw(4, 0, "t  = %d                 ", numt_s);
   mvprintw(5, 0, "");
   mvprintw(6, 0, "");
-
   refresh();
+#else
+  printf("pi = %.15f\n\n", pi_s);
+  printf("c  = %d\n\n", numc_s);
+  printf("t  = %d\n\n\n", numt_s);
+#endif
 
   theTorus = glGenLists (1);
   glNewList(theTorus, GL_COMPILE);
@@ -297,7 +304,9 @@ void reshape(int w, int h)
 }
 
 void onexit() {
+#ifndef _WIN32
   endwin();
+#endif
 
   printf("\npi = %.15f\n\n", pi_s);
   printf("c  = %d\n\n", numc_s);
@@ -322,7 +331,9 @@ void onKeyUpSpecial(int key, int x, int y) {
 
 int main(int argc, char **argv)
 {
+#ifndef _WIN32
   initscr();
+#endif
 
   glutInitWindowSize(1024, 768);
   glutInit(&argc, argv);
