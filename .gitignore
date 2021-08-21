@@ -3,7 +3,7 @@ build/
 torus/
 
 *.o
-./freeglut.dll
+freeglut.dll
 
 torus
 torus.exe
