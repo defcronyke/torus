@@ -12,11 +12,15 @@ torus_build_sh() {
 
   mkdir -p build
 
-  cd build
 
   rm torus 2>/dev/null
   rm torus.exe 2>/dev/null
   rm torus.tar.7z 2>/dev/null
+  
+  cd build
+
+  rm torus 2>/dev/null
+  rm torus.exe 2>/dev/null
 
   cmake -DCMAKE_TOOLCHAIN_FILE=${PWD}/../windows-cross-compile-x86_64-w64-mingw32.cmake $@ ..
 
@@ -37,7 +41,7 @@ torus_build_sh() {
   cp deps/freeglut-mingw/freeglut/bin/x64/freeglut.dll torus/
   cp LICENSE* torus/
 
-  tar cvf - torus/ | 7z a -si torus.tar.7z
+  7z a torus.7z torus
 
   torus_build_sh_on_close $@
 }
