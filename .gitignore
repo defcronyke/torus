@@ -1,7 +1,9 @@
 build/
 .vscode/
+torus/
 
 *.o
 
 torus
 torus.exe
+torus.zip
