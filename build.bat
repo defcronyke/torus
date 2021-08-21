@@ -16,3 +16,4 @@ mkdir torus
 
 cp torus.exe torus/
 cp freeglut.dll torus/
+cp LICENSE* torus/
