@@ -48,6 +48,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #ifndef _WIN32
 #include <ncurses.h>
@@ -94,7 +95,7 @@ static void torus(int numc, int numt, double pi)
           y = scale * (1+.1*cos(s*twopi/numc))*sin(t*twopi/numt);
           z = scale * .1 * sin(s * twopi / numc);
           
-          glVertex3f(x, y, z);
+          glVertex3f((float)x, (float)y, (float)z);
         }
     }
     glEnd();
@@ -121,7 +122,7 @@ static void torus(int numc, int numt, double pi)
           y = scale * shrink * (1+.1*cos(s*twopi/numc))*sin(t*twopi/numt);
           z = scale * shrink * .1 * sin(s * twopi / numc);
           
-          glVertex3f(x, y, z);
+          glVertex3f((float)x, (float)y, (float)z);
 
           if ((i % 17) == 0 || (j % 8) == 0 || (k % 9) == 0) {
             glDisable(GL_DEPTH_TEST);
@@ -160,9 +161,9 @@ static void init(void)
 void handleKeys(double frameAdjust) {
   double speedAdjust = 0.8;
 
-  double speedAdjustPi = 6.0;
+  double speedAdjustPi = 6.2;
 
-  double rotateSpeed = 0.9;
+  double rotateSpeed = 1.2;
 
   bool reInit = false;
   bool screenUpdated = false;
@@ -237,33 +238,34 @@ void handleKeys(double frameAdjust) {
   }
 
   if (keyspecialstates[GLUT_KEY_RIGHT]) {
-      glRotatef(rotateSpeed * speedAdjust / frameAdjust, 0.0, 1.0, 0.0);
-
-      screenUpdated = true;
+    glRotatef((float)rotateSpeed / (float)frameAdjust, 0.0, 1.0, 0.0);
+    reInit = true;
+    screenUpdated = true;
   }
 
   if (keyspecialstates[GLUT_KEY_LEFT]) {
-      glRotatef(rotateSpeed * speedAdjust / frameAdjust, 0.0, -1.0, 0.0);
-
-      screenUpdated = true;
+    glRotatef((float)rotateSpeed / (float)frameAdjust, 0.0, -1.0, 0.0);
+    reInit = true;
+    screenUpdated = true;
   }
 
   if (keyspecialstates[GLUT_KEY_UP]) {
-      glRotatef(rotateSpeed * speedAdjust / frameAdjust, -1.0, 0.0, 0.0);
-      
-      screenUpdated = true;
+    glRotatef((float)rotateSpeed / (float)frameAdjust, -1.0, 0.0, 0.0);
+    reInit = true;
+    screenUpdated = true;
   }
 
   if (keyspecialstates[GLUT_KEY_DOWN]) {
-      glRotatef(rotateSpeed * speedAdjust / frameAdjust, 1.0, 0.0, 0.0);
-      
-      screenUpdated = true;
+    glRotatef((float)rotateSpeed / (float)frameAdjust, 1.0, 0.0, 0.0);
+    reInit = true;
+    screenUpdated = true;
   }
    
   if (keystates['t'] || keystates['T']) {
       glLoadIdentity();
       gluLookAt(0, 0, 10, 0, 0, 0, 0, 1, 0);
 
+      reInit = true;
       screenUpdated = true;
   }
 
@@ -303,7 +305,7 @@ void reshape(int w, int h)
    gluLookAt(0, 0, 10, 0, 0, 0, 0, 1, 0);
 }
 
-void onexit() {
+void onExit(void) {
 #ifndef _WIN32
   endwin();
 #endif
@@ -327,6 +329,26 @@ void onKeyDownSpecial(int key, int x, int y) {
 
 void onKeyUpSpecial(int key, int x, int y) {
   keyspecialstates[key] = false;
+
+  if (key == GLUT_KEY_RIGHT) {
+      glRotatef(0.0f, 0.0, 1.0, 0.0);
+      glutPostRedisplay();
+  }
+
+  if (key == GLUT_KEY_LEFT) {
+      glRotatef(0.0f, 0.0, -1.0, 0.0);
+      glutPostRedisplay();
+  }
+
+  if (key == GLUT_KEY_UP) {
+      glRotatef(0.0f, -1.0, 0.0, 0.0);
+      glutPostRedisplay();
+  }
+
+  if (key == GLUT_KEY_DOWN) {
+      glRotatef(0.0f, 1.0, 0.0, 0.0);
+      glutPostRedisplay();
+  }
 }
 
 int main(int argc, char **argv)
@@ -355,7 +377,7 @@ int main(int argc, char **argv)
 
   glutDisplayFunc(display);
   
-  atexit(onexit);
+  atexit(onExit);
 
   double frameAdjust = 1.0;
 
