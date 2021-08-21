@@ -3,8 +3,10 @@ build/
 torus/
 
 *.o
+./freeglut.dll
 
 torus
 torus.exe
 torus.zip
 torus.7z
+torus.tar.7z

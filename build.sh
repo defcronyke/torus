@@ -14,7 +14,7 @@ torus_build_sh() {
 
   cd build
 
-  rm torus
+  rm torus 2>/dev/null
 
   cmake $@ ..
 
@@ -23,6 +23,10 @@ torus_build_sh() {
   if [[ "$@" =~ ^.*[[:space:]]*-DCMAKE_BUILD_TYPE=Release[[:space:]]*.*$ ]]; then
     strip -s torus
   fi
+
+  cd ..
+
+  cp build/torus .
 
   torus_build_sh_on_close $@
 }

@@ -9,9 +9,9 @@ torus_run_sh() {
 
   trap "torus_run_sh_on_close $@" INT TERM
 
-  ./build.sh -DCMAKE_BUILD_TYPE=Release $@
+  ./build-mingw.sh -DCMAKE_BUILD_TYPE=Release $@
 
-  ./torus
+  wine torus.exe
 
   torus_run_sh_on_close $@
 }
