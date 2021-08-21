@@ -11,10 +11,10 @@ msbuild ALL_BUILD.vcxproj /property:Configuration=Release
 cd ..
 
 cp build/Release/torus.exe .
-cp deps/freeglut-msvc/bin/x64/freeglut.dll .
+cp deps/freeglut-msvc/freeglut/bin/x64/freeglut.dll .
 
 mkdir torus
 
 cp torus.exe torus/
-cp deps/freeglut-msvc/bin/x64/freeglut.dll torus/
+cp deps/freeglut-msvc/freeglut/bin/x64/freeglut.dll torus/
 cp LICENSE* torus/
