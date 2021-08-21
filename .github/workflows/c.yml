@@ -18,8 +18,10 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev
           ./build.sh -DCMAKE_BUILD_TYPE=Debug
+          rm torus
           mkdir -p torus/torus/
           cp -r build/torus torus/torus/
+          cp LICENSE* torus/torus/
           chmod 755 torus/torus/torus
 
       - name: torus-debug-linux-x86_64
@@ -38,9 +40,10 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev
           ./build.sh -DCMAKE_BUILD_TYPE=Release
+          rm torus
           mkdir -p torus/torus/
-          strip -s build/torus
           cp -r build/torus torus/torus/
+          cp LICENSE* torus/torus/
           chmod 755 torus/torus/torus
 
       - name: torus-release-linux-x86_64
@@ -59,6 +62,9 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev mingw-w64
           ./build-mingw.sh -DCMAKE_BUILD_TYPE=Release
+          mkdir torus-root/
+          mv torus/ torus-root/torus/
+          mv torus-root/ torus/
 
       - name: torus-release-windows-x86_64
         uses: actions/upload-artifact@v2
