@@ -1,3 +1,20 @@
+/*  Copyright (c) 2021 Jeremy Carter <jeremy@jeremycarter.ca>
+
+    All uses of this project in part or in whole are governed
+    by the terms of the license contained in the file titled
+    "LICENSE" that's distributed along with the project, which
+    can be found in the top-level directory of this project.
+
+    If you don't agree to follow those terms or you won't
+    follow them, you are not allowed to use this project or
+    anything that's made with parts of it at all. The project
+    is also	depending on some third-party technologies, and
+    some of those are governed by their own separate licenses,
+    so furthermore, whenever legally possible, all license
+    terms from all of the different technologies apply, with
+    this project's license terms taking first priority.
+*/
+
 /*
  * Copyright (c) 1993-1997, Silicon Graphics, Inc.
  * ALL RIGHTS RESERVED 
@@ -49,10 +66,11 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
 #ifndef _WIN32
+#include <pthread.h>
 #include <ncurses.h>
 #endif
+#include "jack2/simple_client.h"
 
 #define PI_ 3.14159265358979323846
 
@@ -68,6 +86,15 @@ static bool keystates[256];
 static bool keyspecialstates[256];
 
 GLuint theTorus;
+
+extern unsigned int jack2_client_running;
+
+static int argc_s = 1;
+
+#ifndef _WIN32
+pthread_t thread1;
+int iret1;
+#endif
 
 /* Draw a torus */
 static void torus(int numc, int numt, double pi)
@@ -306,8 +333,14 @@ void reshape(int w, int h)
 }
 
 void onExit(void) {
+  jack2_client_running = 0;
+
 #ifndef _WIN32
+  pthread_join(thread1, NULL);
+
   endwin();
+
+  printf("jack2 client ended with exit code: %d\n", iret1);
 #endif
 
   printf("\npi = %.15f\n\n", pi_s);
@@ -351,10 +384,23 @@ void onKeyUpSpecial(int key, int x, int y) {
   }
 }
 
+void* jack2_simple_client_main_callback(void* arg) {
+  int argc = argc_s;
+  
+  char ** argv = NULL;
+  argv = (char**)arg;
+
+  jack2_simple_client_main(argc, argv);
+}
+
 int main(int argc, char **argv)
 {
+  argc_s = argc;
+
 #ifndef _WIN32
   initscr();
+
+  iret1 = pthread_create(&thread1, NULL, jack2_simple_client_main_callback, (void*)argv);
 #endif
 
   glutInitWindowSize(1024, 768);

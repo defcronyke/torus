@@ -2,9 +2,14 @@ cmake_minimum_required(VERSION 3.10)
 
 project(torus)
 
-add_executable(torus torus.c)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
+
+add_executable(torus src/torus.c deps/jack2/simple_client.c)
+# add_executable(torus src/torus.c deps/jack2/inprocess.c)
 
 find_package(OpenGL REQUIRED COMPONENTS OpenGL)
+
+find_package(JACK REQUIRED)
 
 
 if (MINGW)
@@ -30,10 +35,6 @@ if (MINGW)
     ${GLUT_ROOT_PATH}/bin
     ${GLUT_ROOT_PATH}/bin/x64
   )
-
-  # mark_as_advanced(GLUT_glut_LIBRARY_RELEASE GLUT_glut_LIBRARY_DEBUG)
-
-  # find_package(GLUT REQUIRED)
 
   set(
     GLUT_glut_LIBRARY_RELEASE
@@ -63,11 +64,14 @@ if (MINGW)
     torus
     ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARY}
+    ${JACK_LIBRARIES}
   )
 
   include_directories(
+    "deps"
     ${GLUT_INCLUDE_DIRS}
     ${GLUT_ROOT_PATH}/include
+    ${JACK_INCLUDE_DIRS}
   )
 
 elseif (WIN32)
@@ -82,12 +86,12 @@ elseif (WIN32)
     ${GLUT_ROOT_PATH}/bin
   )
 
-find_library( GLUT_glut_LIBRARY_DEBUG NAMES freeglutd
-  PATHS
-  ${OPENGL_LIBRARY_DIR}
-  ${GLUT_ROOT_PATH}/Debug
-  ${GLUT_ROOT_PATH}/lib/x64
-  ${GLUT_ROOT_PATH}/bin
+  find_library( GLUT_glut_LIBRARY_DEBUG NAMES freeglutd
+    PATHS
+    ${OPENGL_LIBRARY_DIR}
+    ${GLUT_ROOT_PATH}/Debug
+    ${GLUT_ROOT_PATH}/lib/x64
+    ${GLUT_ROOT_PATH}/bin
   )
   
   mark_as_advanced(GLUT_glut_LIBRARY_RELEASE GLUT_glut_LIBRARY_DEBUG)
@@ -98,11 +102,14 @@ find_library( GLUT_glut_LIBRARY_DEBUG NAMES freeglutd
     torus
     ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARY}
+    ${JACK_LIBRARIES}
   )
 
   include_directories(
+    "deps"
     ${GLUT_INCLUDE_DIRS}
     ${GLUT_ROOT_PATH}/include
+    ${JACK_INCLUDE_DIRS}
   )
 
 else ()
@@ -115,14 +122,19 @@ else ()
 
   target_link_libraries(
     torus
+
+    pthread
     m
     ${CURSES_LIBRARIES}
     ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARY}
+    ${JACK_LIBRARIES}
   )
 
   include_directories(
+    "deps"
     ${GLUT_INCLUDE_DIRS}
+    ${JACK_INCLUDE_DIRS}
   )
 
 endif ()
