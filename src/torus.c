@@ -66,8 +66,10 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdatomic.h>
+#include <threads.h>
 #ifndef _WIN32
-#include <pthread.h>
+// #include <pthread.h>
 #include <ncurses.h>
 #endif
 #include "jack2/simple_client.h"
@@ -87,14 +89,17 @@ static bool keyspecialstates[256];
 
 GLuint theTorus;
 
-extern unsigned int jack2_client_running;
+extern atomic_int jack2_client_running;
 
 static int argc_s = 1;
 
-#ifndef _WIN32
-pthread_t thread1;
-int iret1;
-#endif
+thrd_t thread1;
+static int iret1 = 0;
+
+// #ifndef _WIN32
+// pthread_t thread1;
+// int iret1;
+// #endif
 
 /* Draw a torus */
 static void torus(int numc, int numt, double pi)
@@ -333,15 +338,20 @@ void reshape(int w, int h)
 }
 
 void onExit(void) {
+#ifndef _WIN32
+  // pthread_join(thread1, NULL);
+  endwin();
+  // printf("jack2 client ended with exit code: %d\n", iret1);
+#endif
+
   jack2_client_running = 0;
 
-#ifndef _WIN32
-  pthread_join(thread1, NULL);
+  int res = 0;
 
-  endwin();
-
+  thrd_join(thread1, &res);
+  
   printf("jack2 client ended with exit code: %d\n", iret1);
-#endif
+  printf("jack2 client returned with return code: %d\n", res);
 
   printf("\npi = %.15f\n\n", pi_s);
   printf("c  = %d\n\n", numc_s);
@@ -384,23 +394,24 @@ void onKeyUpSpecial(int key, int x, int y) {
   }
 }
 
-void* jack2_simple_client_main_callback(void* arg) {
+int jack2_simple_client_main_callback(void* arg) {
   int argc = argc_s;
   
   char ** argv = NULL;
   argv = (char**)arg;
 
-  jack2_simple_client_main(argc, argv);
+  return jack2_simple_client_main(argc, argv);
 }
 
 int main(int argc, char **argv)
 {
   argc_s = argc;
 
+  iret1 = thrd_create(&thread1, (void*)jack2_simple_client_main_callback, (void*)argv);
+
 #ifndef _WIN32
   initscr();
-
-  iret1 = pthread_create(&thread1, NULL, jack2_simple_client_main_callback, (void*)argv);
+  // iret1 = pthread_create(&thread1, NULL, jack2_simple_client_main_callback, (void*)argv);
 #endif
 
   glutInitWindowSize(1024, 768);

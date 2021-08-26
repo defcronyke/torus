@@ -36,8 +36,9 @@
 #include <unistd.h>
 #endif
 #include <jack/jack.h>
+#include <stdatomic.h>
 
-unsigned int jack2_client_running = 1;
+atomic_int jack2_client_running = 1;
 
 jack_port_t *output_port1, *output_port2;
 jack_client_t *client;

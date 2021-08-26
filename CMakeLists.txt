@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(torus)
 
+set(CMAKE_C_STANDARD 11)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 add_executable(torus src/torus.c deps/jack2/simple_client.c)
