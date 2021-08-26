@@ -12,8 +12,15 @@ torus_run_sh() {
   ./build.sh -DCMAKE_BUILD_TYPE=Release $@
 
   ./torus
+  res=$?
 
   torus_run_sh_on_close $@
+
+  if [ $res -eq 139 ]; then
+    reset
+  fi
+
+  return $res
 }
 
 torus_run_sh $@

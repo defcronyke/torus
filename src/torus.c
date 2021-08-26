@@ -68,7 +68,9 @@
 #include <stdbool.h>
 #include <stdatomic.h>
 #include <threads.h>
+#include <signal.h>
 #ifndef _WIN32
+#include <unistd.h>
 // #include <pthread.h>
 #include <ncurses.h>
 #endif
@@ -90,6 +92,7 @@ static bool keyspecialstates[256];
 GLuint theTorus;
 
 extern atomic_int jack2_client_running;
+atomic_int running = 1;
 
 static int argc_s = 1;
 
@@ -100,6 +103,31 @@ static int iret1 = 0;
 // pthread_t thread1;
 // int iret1;
 // #endif
+
+void onExit(void) {
+#ifndef _WIN32
+  // pthread_join(thread1, NULL);
+  endwin();
+  // printf("jack2 client ended with exit code: %d\n", iret1);
+#endif
+
+  jack2_client_running = 0;
+
+  int res = 0;
+
+  thrd_join(thread1, &res);
+  
+  printf("jack2 client ended with exit code: %d\n", iret1);
+  printf("jack2 client returned with return code: %d\n", res);
+
+  printf("\npi = %.15f\n\n", pi_s);
+  printf("c  = %d\n\n", numc_s);
+  printf("t  = %d\n\n", numt_s);
+
+  running = 0;
+
+  exit(res);
+}
 
 /* Draw a torus */
 static void torus(int numc, int numt, double pi)
@@ -310,7 +338,9 @@ void handleKeys(double frameAdjust) {
   }
 
   if (keystates[27]) {
-      exit(0);
+    onExit();
+    // running = 0;
+    // exit(0);
   }
 }
 
@@ -337,26 +367,16 @@ void reshape(int w, int h)
    gluLookAt(0, 0, 10, 0, 0, 0, 0, 1, 0);
 }
 
-void onExit(void) {
+
+
 #ifndef _WIN32
-  // pthread_join(thread1, NULL);
-  endwin();
-  // printf("jack2 client ended with exit code: %d\n", iret1);
-#endif
-
-  jack2_client_running = 0;
-
-  int res = 0;
-
-  thrd_join(thread1, &res);
-  
-  printf("jack2 client ended with exit code: %d\n", iret1);
-  printf("jack2 client returned with return code: %d\n", res);
-
-  printf("\npi = %.15f\n\n", pi_s);
-  printf("c  = %d\n\n", numc_s);
-  printf("t  = %d\n\n", numt_s);
+static void signal_handler(int sig)
+{
+	fprintf(stderr, "signal received, exiting ...\n");
+	onExit();
+	// exit(0);
 }
+#endif
 
 void onKeyDown(unsigned char key, int x, int y) {
   keystates[key] = true;
@@ -405,6 +425,17 @@ int jack2_simple_client_main_callback(void* arg) {
 
 int main(int argc, char **argv)
 {
+#ifdef _WIN32
+	signal(SIGINT, signal_handler);
+	signal(SIGABRT, signal_handler);
+	signal(SIGTERM, signal_handler);
+#else
+	signal(SIGQUIT, signal_handler);
+	signal(SIGTERM, signal_handler);
+	signal(SIGHUP, signal_handler);
+	signal(SIGINT, signal_handler);
+#endif
+
   argc_s = argc;
 
   iret1 = thrd_create(&thread1, (void*)jack2_simple_client_main_callback, (void*)argv);
@@ -438,11 +469,13 @@ int main(int argc, char **argv)
 
   double frameAdjust = 1.0;
 
-  while(1)
+  while(running == 1)
   {
     handleKeys(frameAdjust);
     glutMainLoopEvent();
   }
+
+  onExit();
 
   return 0;
 }

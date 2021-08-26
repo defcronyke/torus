@@ -40,6 +40,7 @@
 
 atomic_int jack2_client_running = 1;
 
+jack_port_t *input_port1, *input_port2;
 jack_port_t *output_port1, *output_port2;
 jack_client_t *client;
 
@@ -60,7 +61,8 @@ static void signal_handler(int sig)
 {
 	jack_client_close(client);
 	fprintf(stderr, "signal received, exiting ...\n");
-	exit(0);
+  jack2_client_running = 0;
+	// exit(0);
 }
 
 /**
@@ -98,14 +100,15 @@ process (jack_nframes_t nframes, void *arg)
  * JACK calls this shutdown_callback if the server ever shuts down or
  * decides to disconnect the client.
  */
-void
-jack_shutdown (void *arg)
+void jack_shutdown (void *arg)
 {
   printf("jack2 client shutting down...");
 
 
   printf("jack2 client stopped");
 	// exit (1);
+
+  jack2_client_running = 0;
 }
 
 // int jack2_simple_client_main() {
@@ -181,7 +184,23 @@ int jack2_simple_client_main (int argc, char *argv[]) {
 
 	jack_on_shutdown (client, jack_shutdown, 0);
 
-	/* create two ports */
+  /* create two input ports */
+
+	input_port1 = jack_port_register (client, "input1",
+					  JACK_DEFAULT_AUDIO_TYPE,
+					  JackPortIsInput, 0);
+
+	input_port2 = jack_port_register (client, "input2",
+					  JACK_DEFAULT_AUDIO_TYPE,
+					  JackPortIsInput, 0);
+
+	if ((input_port1 == NULL) || (input_port2 == NULL)) {
+		fprintf(stderr, "no more JACK input ports available\n");
+    return 1;
+		// exit (1);
+	}
+
+	/* create two output ports */
 
 	output_port1 = jack_port_register (client, "output1",
 					  JACK_DEFAULT_AUDIO_TYPE,
@@ -192,7 +211,7 @@ int jack2_simple_client_main (int argc, char *argv[]) {
 					  JackPortIsOutput, 0);
 
 	if ((output_port1 == NULL) || (output_port2 == NULL)) {
-		fprintf(stderr, "no more JACK ports available\n");
+		fprintf(stderr, "no more JACK output ports available\n");
     return 1;
 		// exit (1);
 	}
@@ -206,7 +225,7 @@ int jack2_simple_client_main (int argc, char *argv[]) {
 		// exit (1);
 	}
 
-	/* Connect the ports.  You can't do this before the client is
+	/* Connect the output ports.  You can't do this before the client is
 	 * activated, because we can't make connections to clients
 	 * that aren't running.  Note the confusing (but necessary)
 	 * orientation of the driver backend ports: playback ports are
@@ -214,23 +233,50 @@ int jack2_simple_client_main (int argc, char *argv[]) {
 	 * it.
 	 */
  	
-	ports = jack_get_ports (client, NULL, NULL,
-				JackPortIsPhysical|JackPortIsInput);
-	if (ports == NULL) {
-		fprintf(stderr, "no physical playback ports\n");
-    return 1;
-		// exit (1);
-	}
+	// ports = jack_get_ports (client, NULL, NULL,
+	// 			JackPortIsPhysical|JackPortIsInput);
+	// if (ports == NULL) {
+	// 	fprintf(stderr, "no physical playback ports\n");
+  //   return 1;
+	// 	// exit (1);
+	// }
 
-	if (jack_connect (client, jack_port_name (output_port1), ports[0])) {
-		fprintf (stderr, "cannot connect output ports\n");
-	}
+	// if (jack_connect (client, jack_port_name (output_port1), ports[0])) {
+	// 	fprintf (stderr, "cannot connect output ports\n");
+	// }
 
-	if (jack_connect (client, jack_port_name (output_port2), ports[1])) {
-		fprintf (stderr, "cannot connect output ports\n");
-	}
+	// if (jack_connect (client, jack_port_name (output_port2), ports[1])) {
+	// 	fprintf (stderr, "cannot connect output ports\n");
+	// }
 
-	jack_free (ports);
+	// jack_free (ports);
+
+
+  /* Connect the input ports.  You can't do this before the client is
+	 * activated, because we can't make connections to clients
+	 * that aren't running.  Note the confusing (but necessary)
+	 * orientation of the driver backend ports: capture ports are
+	 * "output" to the backend, and playback ports are "input" from
+	 * it.
+	 */
+
+  // ports = jack_get_ports (client, NULL, NULL,
+	// 			JackPortIsPhysical|JackPortIsOutput);
+	// if (ports == NULL) {
+	// 	fprintf(stderr, "no physical capture ports\n");
+  //   return 1;
+	// 	// exit (1);
+	// }
+
+	// if (jack_connect (client, jack_port_name (input_port1), ports[0])) {
+	// 	fprintf (stderr, "cannot connect input ports\n");
+	// }
+
+	// if (jack_connect (client, jack_port_name (input_port2), ports[1])) {
+	// 	fprintf (stderr, "cannot connect input ports\n");
+	// }
+
+	// jack_free (ports);
     
     /* install a signal handler to properly quits jack client */
 #ifdef WIN32
