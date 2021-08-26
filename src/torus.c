@@ -71,10 +71,12 @@
 #include <signal.h>
 #ifndef _WIN32
 #include <unistd.h>
-// #include <pthread.h>
 #include <ncurses.h>
 #endif
-#include "jack2/simple_client.h"
+
+#include "jack2/simple_session_client.h"
+// #include "jack2/capture_client.h"
+// #include "jack2/simple_client.h"
 
 #define PI_ 3.14159265358979323846
 
@@ -423,6 +425,25 @@ int jack2_simple_client_main_callback(void* arg) {
   return jack2_simple_client_main(argc, argv);
 }
 
+// int jack2_simple_session_client_main_callback(void* arg) {
+//   int argc = argc_s;
+  
+//   char ** argv = NULL;
+//   argv = (char**)arg;
+
+//   return jack2_simple_session_client_main(argc, argv);
+// }
+
+// int jack2_capture_client_main_callback(void* arg) {
+//   int argc = argc_s;
+  
+//   char ** argv = NULL;
+//   argv = (char**)arg;
+
+//   return jack2_capture_client_main(argc, argv);
+// }
+
+
 int main(int argc, char **argv)
 {
 #ifdef _WIN32
@@ -439,6 +460,8 @@ int main(int argc, char **argv)
   argc_s = argc;
 
   iret1 = thrd_create(&thread1, (void*)jack2_simple_client_main_callback, (void*)argv);
+  // iret1 = thrd_create(&thread1, (void*)jack2_simple_session_client_main_callback, (void*)argv);
+  // iret1 = thrd_create(&thread1, (void*)jack2_capture_client_main_callback, (void*)argv);
 
 #ifndef _WIN32
   initscr();

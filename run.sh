@@ -2,6 +2,7 @@
 
 torus_run_sh_on_close() {
   cd "$current_dir"
+  reset
 }
 
 torus_run_sh() {
@@ -9,16 +10,16 @@ torus_run_sh() {
 
   trap "torus_run_sh_on_close $@" INT TERM
 
-  ./build.sh -DCMAKE_BUILD_TYPE=Release $@
+  ./build.sh -DCMAKE_BUILD_TYPE=Release
 
-  ./torus
+  ./torus $@
   res=$?
 
   torus_run_sh_on_close $@
 
-  if [ $res -eq 139 ]; then
-    reset
-  fi
+  # if [ $res -eq 139 ]; then
+    # reset
+  # fi
 
   return $res
 }

@@ -7,11 +7,47 @@ set(CMAKE_C_STANDARD 11)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 add_executable(torus src/torus.c deps/jack2/simple_client.c)
+# add_executable(torus src/torus.c deps/jack2/capture_client.c)
+# add_executable(torus src/torus.c deps/jack2/simple_session_client.c)
 # add_executable(torus src/torus.c deps/jack2/inprocess.c)
 
 find_package(OpenGL REQUIRED COMPONENTS OpenGL)
 
 find_package(JACK REQUIRED)
+
+
+# # libsndfile
+# find_package(PkgConfig QUIET)
+# if(PKG_CONFIG_FOUND)
+#     pkg_check_modules(LIBSNDFILE_PKGCONF sndfile)
+# endif(PKG_CONFIG_FOUND)
+
+# # Include dir
+# find_path(LIBSNDFILE_INCLUDE_DIR
+#         NAMES sndfile.h
+#         PATHS ${LIBSNDFILE_PKGCONF_INCLUDE_DIRS}
+#         )
+
+# # Library
+# find_library(LIBSNDFILE_LIBRARY
+#         NAMES sndfile libsndfile-1
+#         PATHS ${LIBSNDFILE_PKGCONF_LIBRARY_DIRS}
+#         )
+
+# find_package(PackageHandleStandardArgs)
+# find_package_handle_standard_args(LibSndFile  DEFAULT_MSG  LIBSNDFILE_LIBRARY LIBSNDFILE_INCLUDE_DIR)
+
+# if(LIBSNDFILE_FOUND)
+#     set(LIBSNDFILE_LIBRARIES ${LIBSNDFILE_LIBRARY})
+#     set(LIBSNDFILE_INCLUDE_DIRS ${LIBSNDFILE_INCLUDE_DIR})
+# endif(LIBSNDFILE_FOUND)
+
+# mark_as_advanced(LIBSNDFILE_LIBRARY LIBSNDFILE_LIBRARIES LIBSNDFILE_INCLUDE_DIR LIBSNDFILE_INCLUDE_DIRS)
+
+# include(FindPkgConfig)
+# pkg_search_module(SndFile REQUIRED sndfile)
+
+
 
 
 if (MINGW)
@@ -67,6 +103,7 @@ if (MINGW)
     ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARY}
     ${JACK_LIBRARIES}
+    # ${LIBSNDFILE_LIBRARIES}
   )
 
   include_directories(
@@ -74,6 +111,7 @@ if (MINGW)
     ${GLUT_INCLUDE_DIRS}
     ${GLUT_ROOT_PATH}/include
     ${JACK_INCLUDE_DIRS}
+    # ${LIBSNDFILE_INCLUDE_DIRS}
   )
 
 elseif (WIN32)
@@ -105,6 +143,7 @@ elseif (WIN32)
     ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARY}
     ${JACK_LIBRARIES}
+    # ${LIBSNDFILE_LIBRARIES}
   )
 
   include_directories(
@@ -112,6 +151,7 @@ elseif (WIN32)
     ${GLUT_INCLUDE_DIRS}
     ${GLUT_ROOT_PATH}/include
     ${JACK_INCLUDE_DIRS}
+    # ${LIBSNDFILE_INCLUDE_DIRS}
   )
 
 else ()
@@ -131,12 +171,14 @@ else ()
     ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARY}
     ${JACK_LIBRARIES}
+    # ${LIBSNDFILE_LIBRARIES}
   )
 
   include_directories(
     "deps"
     ${GLUT_INCLUDE_DIRS}
     ${JACK_INCLUDE_DIRS}
+    # ${LIBSNDFILE_INCLUDE_DIRS}
   )
 
 endif ()

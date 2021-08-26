@@ -32,11 +32,12 @@
 #include <string.h>
 #include <math.h>
 #include <signal.h>
+#include <stdatomic.h>
 #ifndef WIN32
 #include <unistd.h>
+#include <ncurses.h>
 #endif
 #include <jack/jack.h>
-#include <stdatomic.h>
 
 atomic_int jack2_client_running = 1;
 
@@ -73,12 +74,30 @@ static void signal_handler(int sig)
  * running, copy the input port to the output.  When it stops, exit.
  */
 
-int
-process (jack_nframes_t nframes, void *arg)
-{
+int process (jack_nframes_t nframes, void *arg) {
+  jack_default_audio_sample_t *in1, *in2;
 	jack_default_audio_sample_t *out1, *out2;
-	paTestData *data = (paTestData*)arg;
-	int i;
+	
+  paTestData *data = (paTestData*)arg;
+	
+  int i;
+
+  in1 = (jack_default_audio_sample_t*)jack_port_get_buffer (input_port1, nframes);
+	in2 = (jack_default_audio_sample_t*)jack_port_get_buffer (input_port2, nframes);
+
+
+#ifndef _WIN32
+  refresh();
+  mvprintw(7, 0, "in1[nframes/2] = %.15f              ", in1[nframes/2]);
+  mvprintw(8, 0, "in2[nframes/2] = %.15f              ", in2[nframes/2]);
+  mvprintw(9, 0, "");
+  mvprintw(10, 0, "");
+  refresh();
+#else
+  printf("in1[nframes/2] = %.15f\n", in1[nframes/2]);
+  printf("in2[nframes/2] = %.15f\n\n", in2[nframes/2]);
+#endif
+
 
 	out1 = (jack_default_audio_sample_t*)jack_port_get_buffer (output_port1, nframes);
 	out2 = (jack_default_audio_sample_t*)jack_port_get_buffer (output_port2, nframes);
@@ -111,13 +130,8 @@ void jack_shutdown (void *arg)
   jack2_client_running = 0;
 }
 
-// int jack2_simple_client_main() {
-int jack2_simple_client_main (int argc, char *argv[]) {
+int jack2_simple_client_main(int argc, char *argv[]) {
   double volume = 0.01;
-
-  // int argc = 1;
-  // char arg1[] = "torus\0";
-  // char * argv[] = { arg1, };
 
 	const char **ports;
 	const char *client_name;
