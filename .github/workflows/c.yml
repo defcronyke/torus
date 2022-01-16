@@ -16,7 +16,7 @@ jobs:
 
       - name: debug-linux-x86_64
         run: |
-          sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev
+          sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev jackd2
           ./build.sh -DCMAKE_BUILD_TYPE=Debug
           rm torus
           mkdir -p torus/torus/
@@ -38,7 +38,7 @@ jobs:
 
       - name: release-linux-x86_64
         run: |
-          sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev
+          sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev jackd2
           ./build.sh -DCMAKE_BUILD_TYPE=Release
           rm torus
           mkdir -p torus/torus/
