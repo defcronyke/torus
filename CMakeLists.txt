@@ -157,6 +157,7 @@ elseif (WIN32)
 else ()
 
   find_package(GLUT REQUIRED)
+  find_package(OpenGL REQUIRED)
 
   set (CURSES_NEED_WIDE TRUE)
     
@@ -169,15 +170,16 @@ else ()
     m
     ${CURSES_LIBRARIES}
     ${OPENGL_LIBRARIES}
-    ${GLUT_LIBRARY}
+    ${GLUT_LIBRARIES}
     ${JACK_LIBRARIES}
     # ${LIBSNDFILE_LIBRARIES}
   )
 
   include_directories(
-    "deps"
+    ${OpenGL_INCLUDE_DIRS}
     ${GLUT_INCLUDE_DIRS}
     ${JACK_INCLUDE_DIRS}
+    "deps"
     # ${LIBSNDFILE_INCLUDE_DIRS}
   )
 

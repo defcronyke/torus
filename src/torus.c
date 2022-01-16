@@ -74,9 +74,9 @@
 #include <ncurses.h>
 #endif
 
-#include "jack2/simple_session_client.h"
+// #include "jack2/simple_session_client.h"
 // #include "jack2/capture_client.h"
-// #include "jack2/simple_client.h"
+#include "jack2/simple_client.h"
 
 #define PI_ 3.14159265358979323846
 
