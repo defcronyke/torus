@@ -16,7 +16,8 @@ jobs:
 
       - name: debug-linux-x86_64
         run: |
-          sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev jackd2
+          sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev libjack-jackd2-dev
+          sudo usermod -a -G audio $USER
           ./build.sh -DCMAKE_BUILD_TYPE=Debug
           rm torus
           mkdir -p torus/torus/
@@ -38,7 +39,8 @@ jobs:
 
       - name: release-linux-x86_64
         run: |
-          sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev jackd2
+          sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev libjack-jackd2-dev
+          sudo usermod -a -G audio $USER
           ./build.sh -DCMAKE_BUILD_TYPE=Release
           rm torus
           mkdir -p torus/torus/
@@ -60,7 +62,8 @@ jobs:
 
       - name: release-windows-x86_64
         run: |
-          sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev mingw-w64
+          sudo apt-get update && sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev mingw-w64 libjack-jackd2-dev
+          sudo usermod -a -G audio $USER
           ./build-mingw.sh -DCMAKE_BUILD_TYPE=Release
           mkdir torus-root/
           mv torus/ torus-root/torus/
