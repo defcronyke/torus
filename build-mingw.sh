@@ -17,13 +17,15 @@ torus_build_sh() {
   rm torus 2>/dev/null
   rm torus.exe 2>/dev/null
   rm torus.tar.7z 2>/dev/null
+
+  cp -r cmake/ build/
   
   cd build
 
   rm torus 2>/dev/null
   rm torus.exe 2>/dev/null
 
-  cmake -DCMAKE_TOOLCHAIN_FILE=${PWD}/../windows-cross-compile-x86_64-w64-mingw32.cmake $@ ..
+  cmake -DCMAKE_TOOLCHAIN_FILE=${PWD}/../cmake/toolchains/windows-cross-compile-x86_64-w64-mingw32.cmake $@ ..
 
   make
 

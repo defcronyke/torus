@@ -6,14 +6,14 @@ set(CMAKE_C_STANDARD 11)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
-add_executable(torus src/torus.c deps/jack2/simple_client.c)
+# add_executable(torus src/torus.c deps/jack2/simple_client.c)
 # add_executable(torus src/torus.c deps/jack2/capture_client.c)
 # add_executable(torus src/torus.c deps/jack2/simple_session_client.c)
 # add_executable(torus src/torus.c deps/jack2/inprocess.c)
 
 find_package(OpenGL REQUIRED COMPONENTS OpenGL)
 
-find_package(JACK REQUIRED)
+
 
 
 # # libsndfile
@@ -51,6 +51,8 @@ find_package(JACK REQUIRED)
 
 
 if (MINGW)
+
+  add_executable(torus src/torus.c)
   
   set (GLUT_ROOT_PATH ${CMAKE_SOURCE_DIR}/deps/freeglut-mingw/freeglut)
 
@@ -100,6 +102,9 @@ if (MINGW)
 
   target_link_libraries(
     torus
+
+    m
+    pthread
     ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARY}
     ${JACK_LIBRARIES}
@@ -115,6 +120,8 @@ if (MINGW)
   )
 
 elseif (WIN32)
+
+  add_executable(torus src/torus.c deps/jack2/simple_client.c)
 
   set (GLUT_ROOT_PATH $ENV{USERPROFILE}/freeglut)
 
@@ -138,6 +145,8 @@ elseif (WIN32)
 
   find_package(GLUT REQUIRED)
 
+  find_package(JACK)
+
   target_link_libraries(
     torus
     ${OPENGL_LIBRARIES}
@@ -156,12 +165,16 @@ elseif (WIN32)
 
 else ()
 
+  add_executable(torus src/torus.c deps/jack2/simple_client.c)
+
   find_package(GLUT REQUIRED)
   find_package(OpenGL REQUIRED)
 
   set (CURSES_NEED_WIDE TRUE)
     
   find_package(Curses REQUIRED)
+
+  find_package(JACK)
 
   target_link_libraries(
     torus

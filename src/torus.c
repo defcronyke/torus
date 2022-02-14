@@ -67,16 +67,22 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdatomic.h>
-#include <threads.h>
 #include <signal.h>
+
 #ifndef _WIN32
 #include <unistd.h>
 #include <ncurses.h>
 #endif
 
+// #ifdef __MINGW32__
+// #include <pthread.h>
+// #else
+// #include <threads.h>
+// #endif
+
 // #include "jack2/simple_session_client.h"
 // #include "jack2/capture_client.h"
-#include "jack2/simple_client.h"
+// #include "jack2/simple_client.h"
 
 #define PI_ 3.14159265358979323846
 
@@ -93,12 +99,17 @@ static bool keyspecialstates[256];
 
 GLuint theTorus;
 
-extern atomic_int jack2_client_running;
+// extern atomic_int jack2_client_running;
 atomic_int running = 1;
 
 static int argc_s = 1;
 
-thrd_t thread1;
+// #ifdef __MINGW32__
+// pthread_t thread1;
+// #else
+// thrd_t thread1;
+// #endif
+
 static int iret1 = 0;
 
 // #ifndef _WIN32
@@ -113,11 +124,13 @@ void onExit(void) {
   // printf("jack2 client ended with exit code: %d\n", iret1);
 #endif
 
-  jack2_client_running = 0;
+  // jack2_client_running = 0;
 
   int res = 0;
 
-  thrd_join(thread1, &res);
+  // thread1(&res);
+
+  // thrd_join(thread1, &res);
   
   printf("jack2 client ended with exit code: %d\n", iret1);
   printf("jack2 client returned with return code: %d\n", res);
@@ -416,14 +429,14 @@ void onKeyUpSpecial(int key, int x, int y) {
   }
 }
 
-int jack2_simple_client_main_callback(void* arg) {
-  int argc = argc_s;
+// int jack2_simple_client_main_callback(void* arg) {
+//   int argc = argc_s;
   
-  char ** argv = NULL;
-  argv = (char**)arg;
+//   char ** argv = NULL;
+//   argv = (char**)arg;
 
-  return jack2_simple_client_main(argc, argv);
-}
+//   return jack2_simple_client_main(argc, argv);
+// }
 
 // int jack2_simple_session_client_main_callback(void* arg) {
 //   int argc = argc_s;
@@ -446,6 +459,7 @@ int jack2_simple_client_main_callback(void* arg) {
 
 int main(int argc, char **argv)
 {
+#ifndef __MINGW32__
 #ifdef _WIN32
 	signal(SIGINT, signal_handler);
 	signal(SIGABRT, signal_handler);
@@ -456,10 +470,11 @@ int main(int argc, char **argv)
 	signal(SIGHUP, signal_handler);
 	signal(SIGINT, signal_handler);
 #endif
+#endif
 
   argc_s = argc;
 
-  iret1 = thrd_create(&thread1, (void*)jack2_simple_client_main_callback, (void*)argv);
+  // iret1 = thrd_create(&thread1, (void*)jack2_simple_client_main_callback, (void*)argv);
   // iret1 = thrd_create(&thread1, (void*)jack2_simple_session_client_main_callback, (void*)argv);
   // iret1 = thrd_create(&thread1, (void*)jack2_capture_client_main_callback, (void*)argv);
 
